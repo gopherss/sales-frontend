@@ -4,10 +4,5 @@
         "builder": "npm",
         "buildCommand": "npm run build",
         "outputDir": "dist"
-    },
-    "deploy": {
-        "env": {
-            "NODE_ENV": "production"
-        }
     }
 }
