@@ -1,0 +1,9 @@
+{
+    "build": {
+        "type": "npm",
+        "build_command": "npm run build"
+    },
+    "deploy": {
+        "target": "static"
+    }
+}
