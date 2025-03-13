@@ -10,10 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formkit/tempo": "^0.1.2",
-    "@types/d3": "^7.4.3",
     "axios": "^1.8.3",
-    "d3": "^7.9.0",
     "framer-motion": "^12.4.9",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.477.0",
