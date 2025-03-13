@@ -1,8 +1,0 @@
-{
-    "type": "static",
-    "build": {
-        "builder": "npm",
-        "buildCommand": "npm run build",
-        "outputDir": "dist"
-    }
-}
