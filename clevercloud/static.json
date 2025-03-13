@@ -1,0 +1,5 @@
+{
+    "directory": "dist",
+    "push_state": true,
+    "error_page": "index.html"
+}
