@@ -21,7 +21,7 @@ const AppRoutes = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <Router basename="/mi-app">
+        <Router>
             {token && <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />}
             {/* Contenedor principal con margen si hay sidebar */}
             <div className={`transition-all ${token ? "sm:ml-64" : ""} ${isOpen ? "ml-3.5" : ""}`}>
