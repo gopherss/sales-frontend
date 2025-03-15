@@ -11,6 +11,7 @@ export interface Sale {
     id_user: number;
     id_customer: number;
     payment_method: string;
+    operation_number: string;
     total?: number;
     details: SaleDetail[];
 }

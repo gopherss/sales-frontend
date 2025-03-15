@@ -15,6 +15,7 @@ const SalesAdministration: FC = (): JSX.Element => {
     const [dniSearch, setDniSearch] = useState("");
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<string>("");
+    const [operationNumber, setOperationNumber] = useState<string>("");
     const { loading, searchCustomer, addCustomer } = useCustomerStore();
     const { registerSale, loadingSale } = useSalesStore();
     const { token } = useAuthStore();
@@ -109,10 +110,16 @@ const SalesAdministration: FC = (): JSX.Element => {
             return;
         }
 
+        if (!operationNumber) {
+            toast.error("Debe ingresar el número de operación");
+            return;
+        }
+
         const sale = {
             id_user: decodedToken.id,
             id_customer: customer.id_customer,
             payment_method: paymentMethod,
+            operation_number: operationNumber,
             details: cart.map(item => ({
                 id_product: item.product.id_product,
                 quantity: item.quantity,
@@ -205,6 +212,13 @@ const SalesAdministration: FC = (): JSX.Element => {
                             onChange={(e) => setPaymentMethod(e.target.value)} // ✅ Actualiza el estado cuando el usuario seleccione un método
                         />
                     </div>
+                    <InputFuturistic
+                        label="Número de operación"
+                        icon={NotebookPen}
+                        placeholder="Ingrese el número de operación"
+                        value={operationNumber}
+                        onChange={(e) => setOperationNumber(e.target.value)}
+                    />
                 </div>
 
                 {/* Carrito */}
