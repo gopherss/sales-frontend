@@ -147,7 +147,7 @@ const SalesAdministration: FC = (): JSX.Element => {
 
                     <div className="space-y-4">
                         {/* DNI y Consulta */}
-                        <div className="flex gap-4">
+                        <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1">
                                 <InputFuturistic
                                     label="DNI"
@@ -158,8 +158,14 @@ const SalesAdministration: FC = (): JSX.Element => {
                                     onChange={(e) => setDniSearch(e.target.value.replace(/\D/g, "").slice(0, 8))}
                                 />
                             </div>
-                            <ButtonFuturistic label={loading ? "" : "Consultar Cliente"} icon={loading ? LoaderPinwheel : Search} className="mt-6" onClick={handleSearchByDni} />
+                            <ButtonFuturistic
+                                label={loading ? "" : "Consultar Cliente"}
+                                icon={loading ? LoaderPinwheel : Search}
+                                className="w-full md:w-auto mt-2 md:mt-6"
+                                onClick={handleSearchByDni}
+                            />
                         </div>
+
 
                         {/* Nombre y Apellidos */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
