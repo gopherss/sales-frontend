@@ -5,6 +5,7 @@ import TableFuturistic, { Column } from "../components/TableFuturistic";
 import { useAuthStore, UserProfile, Role } from "../store/useAuthStore";
 import { formatDate } from '../utils/functionDate';
 import { validateEmail } from "../utils/validateEmail";
+import { jwtDecode } from "jwt-decode";
 
 const columns: Column<UserProfile>[] = [
     { key: "name", label: "Nombre" },
@@ -33,7 +34,7 @@ const columns: Column<UserProfile>[] = [
 ];
 
 const UsersAdministration: FC = (): JSX.Element => {
-    const { users, fetchUsers, updateUser, registerUser, loading } = useAuthStore();
+    const { token, users, loading, fetchUsers, updateUser, registerUser } = useAuthStore();
     const [searchTerm, setSearchTerm] = useState("");
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -44,6 +45,8 @@ const UsersAdministration: FC = (): JSX.Element => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+
+    const decodedToken: { id_user: number; role: string } = jwtDecode(token ?? '');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -142,9 +145,32 @@ const UsersAdministration: FC = (): JSX.Element => {
                 onPageChange={setCurrentPage}
                 onSearch={handleSearch} // Pasa la función de búsqueda
                 loading={loading}
-                actions={(user) => (
-                    <ButtonFuturistic icon={Edit} onClick={() => handleEdit(user)} gradient="bg-gradient-to-r from-green-500 to-teal-600" />
-                )}
+                actions={(user) => {
+                    // Si el usuario logueado es ROOT, muestra el botón para todos los usuarios
+                    if (decodedToken.role === Role.ROOT) {
+                        return (
+                            <ButtonFuturistic
+                                icon={Edit}
+                                onClick={() => handleEdit(user)}
+                                gradient="bg-gradient-to-r from-green-500 to-teal-600"
+                            />
+                        );
+                    }
+                    // Si el usuario logueado es ADMIN, muestra el botón para otros ADMIN y EMPLOYEE, pero no para ROOT
+                    if (decodedToken.role === Role.ADMIN) {
+                        if (user.role !== Role.ROOT) {
+                            return (
+                                <ButtonFuturistic
+                                    icon={Edit}
+                                    onClick={() => handleEdit(user)}
+                                    gradient="bg-gradient-to-r from-green-500 to-teal-600"
+                                />
+                            );
+                        }
+                        return <></>; // No mostrar botón para ROOT
+                    }
+                    return <></>;
+                }}
             />
 
             {/* Modal para edición de usuario */}
@@ -152,7 +178,16 @@ const UsersAdministration: FC = (): JSX.Element => {
                 <div className="flex flex-col gap-3">
                     <InputFuturistic label="Nombre" type="text" placeholder="nombre:" name="name" value={formData.name} onChange={handleInputChange} />
                     <InputFuturistic label="Correo Electrónico" type="email" placeholder="email@example.com" name="email" value={formData.email} onChange={handleInputChange} />
-                    <SelectFuturistic label="Rol" options={Object.values(Role).map(role => ({ label: role, value: role }))} value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })} />
+                    <SelectFuturistic
+                        label="Rol"
+                        options={[
+                            { value: "", label: "Selecciona un rol" },
+                            ...Object.values(Role)
+                                .filter(role => role !== Role.ROOT)
+                                .map(role => ({ label: role, value: role }))
+                        ]}
+                        value={formData.role || ""}
+                        onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })} />
                     <SwitchFuturistic label="Estado" checked={formData.status} onChange={(checked) => setFormData({ ...formData, status: checked })} />
                     <InputFuturistic label="Nueva Contraseña" type="password" placeholder="nueva contraseña:(opcional)" name="password" value={formData.password} onChange={handleInputChange} />
                     <ButtonFuturistic
@@ -170,7 +205,12 @@ const UsersAdministration: FC = (): JSX.Element => {
                     <InputFuturistic label="Nombre" type="text" placeholder="nombre:" name="name" value={formData.name} onChange={handleInputChange} />
                     <InputFuturistic label="Correo Electrónico" type="email" placeholder="email@example.com" name="email" value={formData.email} onChange={handleInputChange} />
                     <InputFuturistic label="Contraseña" type="password" name="password" placeholder="contraseña:" value={formData.password} onChange={handleInputChange} />
-                    <SelectFuturistic label="Rol" options={Object.values(Role).map(role => ({ label: role, value: role }))} value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })} />
+                    <SelectFuturistic
+                        label="Rol"
+                        options={Object.values(Role)
+                            .filter(role => role !== Role.ROOT)
+                            .map(role => ({ label: role, value: role }))} value={formData.role}
+                        onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })} />
                     <ButtonFuturistic
                         label={loading ? "" : "Registrar Usuario"}
                         onClick={handleRegisterUser}

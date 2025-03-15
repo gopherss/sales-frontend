@@ -71,8 +71,8 @@ const ProductsAdministration = () => {
                     <div className="dark:bg-gray-800 p-4 rounded-lg shadow-md">
                         <h2 className="text-white font-semibold mb-3">Editar Categoría</h2>
                         <SelectFuturistic
-                            label="Seleccionar Categoría"
-                            options={categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))}
+                            label="Categoría"
+                            options={[{ value: "", label: "Seleccionar Categoría" }, ...categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))]}
                             icon={List}
                             value={selectedCategory || ""}
                             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -110,7 +110,11 @@ const ProductsAdministration = () => {
                         <TextareaFuturistic label="Descripción" placeholder="Descripción" icon={Text} value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} />
                         <InputFuturistic label="Precio" placeholder="precio: " icon={Banknote} type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
                         <InputFuturistic label="Unidad" placeholder="unidad: " icon={Boxes} value={newProduct.unit_type} onChange={(e) => setNewProduct({ ...newProduct, unit_type: e.target.value })} />
-                        <SelectFuturistic lang="Categoria" label="Categorías" options={categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))} value={newProduct.id_category} onChange={(e) => setNewProduct({ ...newProduct, id_category: e.target.value })} />
+                        <SelectFuturistic
+                            label="Categoría"
+                            options={[{ value: "", label: "Selecciona un categoría" }, ...categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))]}
+                            value={newProduct.id_category}
+                            onChange={(e) => setNewProduct({ ...newProduct, id_category: e.target.value })} />
                         <ButtonFuturistic label={loading ? "" : "Crear Producto"} icon={loading ? LoaderPinwheel : Plus} onClick={handleAddProduct} disabled={loading} className="mt-3 w-full" />
                     </ModalFuturistic>
 
@@ -174,7 +178,11 @@ const ProductsAdministration = () => {
                         <InputFuturistic label="SKU" placeholder="sku: SKU115" value={editingProduct.sku === null ? "" : editingProduct.sku} onChange={(e) => setEditingProduct({ ...editingProduct, sku: e.target.value })} />
                         <InputFuturistic label="Precio" placeholder="Precio" type="number" value={editingProduct.price.toString()} onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })} />
                         <InputFuturistic label="Unidad" placeholder="Unidad" value={editingProduct.unit_type} onChange={(e) => setEditingProduct({ ...editingProduct, unit_type: e.target.value })} />
-                        <SelectFuturistic label="Categoría" options={categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))} value={editingProduct.id_category.toString()} onChange={(e) => setEditingProduct({ ...editingProduct, id_category: parseInt(e.target.value) })} />
+                        <SelectFuturistic
+                            label="Categoría"
+                            options={[{ value: "", label: "Selecciona un categoría" }, ...categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))]}
+                            value={editingProduct.id_category.toString() || ""}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, id_category: parseInt(e.target.value) })} />
                         <SwitchFuturistic label="Estado" checked={editingProduct.status} onChange={(checked) => setEditingProduct({ ...editingProduct, status: checked })} />
                         <ButtonFuturistic className="mt-3 w-full"
                             label={loading ? "" : "Guardar Cambios"}

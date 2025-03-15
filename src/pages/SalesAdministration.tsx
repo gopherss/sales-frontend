@@ -14,7 +14,7 @@ const SalesAdministration: FC = (): JSX.Element => {
     const [highlightId, setHighlightId] = useState<number | null>(null);
     const [dniSearch, setDniSearch] = useState("");
     const [customer, setCustomer] = useState<Customer | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState<string>("PagoEfectivo");
+    const [paymentMethod, setPaymentMethod] = useState<string>("");
     const { loading, searchCustomer, addCustomer } = useCustomerStore();
     const { registerSale, loadingSale } = useSalesStore();
     const { token } = useAuthStore();
@@ -200,7 +200,7 @@ const SalesAdministration: FC = (): JSX.Element => {
                         <SelectFuturistic
                             icon={Banknote}
                             label="Método de Pago"
-                            options={paymentMethods}
+                            options={[{ value: "", label: "Selecciona un método de pago" }, ...paymentMethods]}
                             value={paymentMethod} // ✅ Asegurar que muestre el valor actual
                             onChange={(e) => setPaymentMethod(e.target.value)} // ✅ Actualiza el estado cuando el usuario seleccione un método
                         />

@@ -8,16 +8,20 @@ const ProductAutocomplete = ({ onSelect }: { onSelect: (product: Product) => voi
     const [searchTerm, setSearchTerm] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [searchTriggered, setSearchTriggered] = useState(false); // New state to track if search was triggered by Enter
 
     useEffect(() => {
-        if (searchTriggered && searchTerm.length > 1) {
-            fetchProducts(1, 10, searchTerm);
-            setShowDropdown(true);
-            setSearchTriggered(false); // Reset the trigger
+        if (searchTerm.length > 1 && !selectedProduct) {
+            const delayDebounce = setTimeout(() => {
+                fetchProducts(1, 10, searchTerm);
+                setShowDropdown(true);
+            }, 300);
+            return () => clearTimeout(delayDebounce);
+        } else {
+            setShowDropdown(false);
         }
-    }, [searchTerm, searchTriggered, fetchProducts]);
+    }, [searchTerm, fetchProducts, selectedProduct]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -31,8 +35,15 @@ const ProductAutocomplete = ({ onSelect }: { onSelect: (product: Product) => voi
 
     const handleSelect = (product: Product) => {
         setSearchTerm(product.name);
+        setSelectedProduct(product);
         setShowDropdown(false);
         onSelect(product);
+    };
+
+    const handleClear = () => {
+        setSearchTerm("");
+        setSelectedProduct(null);
+        setShowDropdown(false);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -40,23 +51,9 @@ const ProductAutocomplete = ({ onSelect }: { onSelect: (product: Product) => voi
             setSelectedIndex((prev) => (prev < products.length - 1 ? prev + 1 : prev));
         } else if (e.key === "ArrowUp") {
             setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-        } else if (e.key === "Enter") {
-            if (products.length > 0) {
-                if (showDropdown) {
-                    handleSelect(products[selectedIndex]);
-                } else {
-                    setSearchTriggered(true);
-                }
-
-            } else {
-                setSearchTriggered(true);
-            }
+        } else if (e.key === "Enter" && showDropdown && products.length > 0) {
+            handleSelect(products[selectedIndex]);
         }
-    };
-
-    const handleClear = () => {
-        setSearchTerm("");
-        setShowDropdown(false);
     };
 
     return (
@@ -69,6 +66,7 @@ const ProductAutocomplete = ({ onSelect }: { onSelect: (product: Product) => voi
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value);
+                        setSelectedProduct(null);
                         setSelectedIndex(0);
                     }}
                     onKeyDown={handleKeyDown}

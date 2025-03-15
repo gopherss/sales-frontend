@@ -9,15 +9,19 @@ const SupplierAutocomplete = ({ onSelect }: { onSelect: (supplier: Supplier) => 
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const [searchTriggered, setSearchTriggered] = useState(false); // New state for Enter trigger
+    const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
 
     useEffect(() => {
-        if (searchTriggered && searchTerm.length > 1) {
-            fetchSuppliers(1, 10, searchTerm);
-            setShowDropdown(true);
-            setSearchTriggered(false); // Reset the trigger
+        if (searchTerm.length > 1 && !selectedSupplier) {
+            const delayDebounce = setTimeout(() => {
+                fetchSuppliers(1, 10, searchTerm);
+                setShowDropdown(true);
+            }, 300);
+            return () => clearTimeout(delayDebounce);
+        } else {
+            setShowDropdown(false);
         }
-    }, [searchTerm, searchTriggered, fetchSuppliers]);
+    }, [searchTerm, fetchSuppliers, selectedSupplier]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -31,8 +35,15 @@ const SupplierAutocomplete = ({ onSelect }: { onSelect: (supplier: Supplier) => 
 
     const handleSelect = (supplier: Supplier) => {
         setSearchTerm(supplier.name);
+        setSelectedSupplier(supplier);
         setShowDropdown(false);
         onSelect(supplier);
+    };
+
+    const handleClear = () => {
+        setSearchTerm("");
+        setSelectedSupplier(null);
+        setShowDropdown(false);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -40,16 +51,8 @@ const SupplierAutocomplete = ({ onSelect }: { onSelect: (supplier: Supplier) => 
             setSelectedIndex((prev) => (prev < suppliers.length - 1 ? prev + 1 : prev));
         } else if (e.key === "ArrowUp") {
             setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-        } else if (e.key === "Enter") {
-            if (suppliers.length > 0) {
-                if (showDropdown) {
-                    handleSelect(suppliers[selectedIndex]);
-                } else {
-                    setSearchTriggered(true);
-                }
-            } else {
-                setSearchTriggered(true);
-            }
+        } else if (e.key === "Enter" && showDropdown && suppliers.length > 0) {
+            handleSelect(suppliers[selectedIndex]);
         }
     };
 
@@ -62,6 +65,7 @@ const SupplierAutocomplete = ({ onSelect }: { onSelect: (supplier: Supplier) => 
                 value={searchTerm}
                 onChange={(e) => {
                     setSearchTerm(e.target.value);
+                    setSelectedSupplier(null); // Restablecer cuando el usuario edita el input
                     setSelectedIndex(0);
                 }}
                 onKeyDown={handleKeyDown}
@@ -70,7 +74,7 @@ const SupplierAutocomplete = ({ onSelect }: { onSelect: (supplier: Supplier) => 
                 <XCircle
                     className="absolute top-12 right-1 text-orange-500 dark:text-red-500 cursor-pointer hover:text-red-500"
                     size={18}
-                    onClick={() => setSearchTerm("")}
+                    onClick={handleClear}
                 />
             )}
             {showDropdown && (
