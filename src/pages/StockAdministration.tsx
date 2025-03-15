@@ -17,11 +17,11 @@ const StockAdministration: FC = (): JSX.Element => {
             <TableFuturistic
                 columns={[
                     { key: "name", label: "Producto" },
-                    { key: "sku", label: "SKU" },
+                    { key: "stock", label: "Stock" },
                     { key: "price", label: "Precio" },
                     { key: "unit_type", label: "Unidad" },
                     { key: "category", label: "Categoría" },
-                    { key: "stock", label: "Stock" },
+                    { key: "sku", label: "SKU" },
                 ]}
                 data={stock}
                 currentPage={paginationStock?.page || 1}
