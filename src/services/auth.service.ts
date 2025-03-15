@@ -1,6 +1,9 @@
 import { useAuthStore, UserProfile } from "../store/useAuthStore";
 const API_URL_CUSTOMERS = `${import.meta.env.VITE_BASE_URL}/users`;
 
+console.log(import.meta.env.VITE_BASE_URL);
+
+
 export const login = async (email: string, password: string) => {
     try {
         const res = await fetch(`${API_URL_CUSTOMERS}/login`, {
