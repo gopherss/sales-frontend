@@ -97,7 +97,7 @@ const TicketsAdministration = () => {
                                 <div key={index} className="flex gap-4">
                                     <InputFuturistic
                                         type="text"
-                                        value={detail.product.name}
+                                        value={detail.product?.name}
                                         disabled
                                     />
                                     <InputFuturistic
@@ -132,6 +132,8 @@ const TicketsAdministration = () => {
                     </>
                 )}
             </ModalFuturistic>
+
+
         </div>
     );
 };
