@@ -8,6 +8,7 @@ import { paymentMethods } from "../constants";
 import { Customer, useCustomerStore } from "../store/useCustomerStore";
 import { useSalesStore } from "../store/useSalesStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { Sale } from "../services/sales.service";
 
 const SalesAdministration: FC = (): JSX.Element => {
     const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
@@ -109,32 +110,47 @@ const SalesAdministration: FC = (): JSX.Element => {
             toast.error("Debe seleccionar un método de pago");
             return;
         }
-
         if (!operationNumber) {
             toast.error("Debe ingresar el número de operación");
             return;
         }
 
-        const sale = {
+        // Obtenemos la fecha actual en formato ISO
+        const saleDate = new Date().toISOString();
+
+        const sale: Sale = {
             id_user: decodedToken.id,
             id_customer: customer.id_customer,
             payment_method: paymentMethod,
             operation_number: operationNumber,
+            date: saleDate, // ✅ Agregar la fecha
+            customer: {
+                name: customer.name,
+                first_surname: customer.first_surname,
+                second_surname: customer.second_surname || "",
+            }, // ✅ Agregar el cliente
             details: cart.map(item => ({
                 id_product: item.product.id_product,
                 quantity: item.quantity,
                 unit_price: item.product.price,
+                id_sale: 0, // Si el API lo requiere, puedes enviarlo como 0 o evitarlo si no es obligatorio
+                id_detail: 0, // Similar a id_sale, dependiendo de la API
+                createdAt: saleDate,
+                updatedAt: saleDate,
+                product: item.product, // Si `product` es requerido en `SaleDetail`
             })),
         };
+
         const success = await registerSale(sale);
         if (success) {
             setCustomer(null);
-            setDniSearch('');
+            setDniSearch("");
             setCart([]);
         } else {
-            toast.success("No hay stock disponible")
+            toast.error("No hay stock disponible");
         }
     };
+
 
     return (
         <div className="lg:px-10 px-4 py-6">

@@ -26,8 +26,8 @@ export interface SaleDetail {
     quantity: number;
     unit_price: number;
     createdAt: string;
-    updatedAt: string;
-    product: Product;
+    updatedAt?: string;
+    product?: Product;
 }
 
 export interface Product {
@@ -39,8 +39,8 @@ export interface Product {
     unit_type: string;
     status: boolean;
     id_category: number;
-    createdAt: string;
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface SalesPagination {
