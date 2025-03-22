@@ -15,6 +15,7 @@ import SuppliersAdministration from "../pages/SuppliersAdministration";
 import SalesAdministration from "../pages/SalesAdministration";
 import CustomersAdministration from "../pages/CustomersAdministration";
 import StockAdministration from "../pages/StockAdministration";
+import TicketsAdministration from "../pages/TicketsAdministration";
 
 const AppRoutes = () => {
     const { token } = useAuthStore();
@@ -74,6 +75,12 @@ const AppRoutes = () => {
                     <Route path="/stock" element={
                         <ProtectedRoute>
                             <StockAdministration />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/tickets" element={
+                        <ProtectedRoute>
+                            <TicketsAdministration />
                         </ProtectedRoute>
                     } />
 

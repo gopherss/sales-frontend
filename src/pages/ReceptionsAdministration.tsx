@@ -50,7 +50,7 @@ const ReceptionsAdministration: FC = (): JSX.Element => {
         { key: "product_name", label: "Producto" },
         { key: "supplier_name", label: "Proveedor" },
         { key: "quantity", label: "Cantidad" },
-        { key: "purchase_price", label: "Precio Compra" },
+        { key: "purchase_price", label: "Precio Compra S/" },
         {
             key: "date", label: "Fecha de Recepción",
             render: (value) => <span> {formatDate(value as string)} </span>

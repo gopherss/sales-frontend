@@ -122,7 +122,7 @@ const ProductsAdministration = () => {
                         columns={[
                             { key: "name", label: "Nombre" },
                             { key: "description", label: "Descripción" },
-                            { key: "price", label: "Precio" },
+                            { key: "price", label: "Precio S/" },
                             { key: "unit_type", label: "Unidad" },
                             { key: "sku", label: "SKU" },
                             {

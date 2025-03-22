@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
-import { Menu, X, UserCheck, BarChartBig, UserCog, PackageCheck, Store, HandCoins, UsersRound, ShoppingBasket, Speech, Boxes } from "lucide-react";
+import { Menu, X, UserCheck, BarChartBig, UserCog, PackageCheck, Store, HandCoins, UsersRound, ShoppingBasket, Speech, Boxes, Dock } from "lucide-react";
 import { useAuthStore, Role } from '../store/useAuthStore';
 import { jwtDecode } from 'jwt-decode'
 
@@ -63,6 +63,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
                                 <FuturisticNavLink to="/suppliers" label="Proveedores" Icon={UsersRound} />
                                 <FuturisticNavLink to="/stock" label="Stock" Icon={Boxes} />
                                 <FuturisticNavLink to="/profile" label="Perfil" Icon={UserCheck} />
+                                <FuturisticNavLink to="/tickets" label="Administrar Ventas" Icon={Dock} />
 
                                 <FuturisticNavLink to="/users" label="Usuarios" Icon={UserCog} />
                             </>
@@ -76,6 +77,7 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
                                 <FuturisticNavLink to="/suppliers" label="Proveedores" Icon={UsersRound} />
                                 <FuturisticNavLink to="/stock" label="Stock" Icon={Boxes} />
                                 <FuturisticNavLink to="/profile" label="Perfil" Icon={UserCheck} />
+                                <FuturisticNavLink to="/tickets" label="Administrar Ventas" Icon={Dock} />
                             </>)}
                     </nav>
 

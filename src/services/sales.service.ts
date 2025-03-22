@@ -1,9 +1,10 @@
 import { fetchWithAuth } from "./auth.service";
 const API_URL_SALES = `${import.meta.env.VITE_BASE_URL}/sales`;
-export interface SaleDetail {
-    id_product: number;
-    quantity: number;
-    unit_price: number;
+
+export interface Customer {
+    name: string;
+    first_surname: string;
+    second_surname: string;
 }
 
 export interface Sale {
@@ -12,8 +13,34 @@ export interface Sale {
     id_customer: number;
     payment_method: string;
     operation_number: string;
+    date: string;
     total?: number;
+    customer: Customer;
     details: SaleDetail[];
+}
+
+export interface SaleDetail {
+    id_detail: number;
+    id_sale: number;
+    id_product: number;
+    quantity: number;
+    unit_price: number;
+    createdAt: string;
+    updatedAt: string;
+    product: Product;
+}
+
+export interface Product {
+    id_product: number;
+    name: string;
+    description: string;
+    sku: string | null;
+    price: number;
+    unit_type: string;
+    status: boolean;
+    id_category: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface SalesPagination {
