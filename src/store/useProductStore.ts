@@ -22,6 +22,7 @@ export interface Product {
     sku: string;
     id_category: number;
     createdAt: string;
+    fecha_vencimiento: string | null;
 }
 
 export interface ProductPagination {

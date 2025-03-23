@@ -16,7 +16,7 @@ const ProductsAdministration = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-    const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", unit_type: "", id_category: "" });
+    const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", unit_type: "", id_category: "", fecha_vencimiento: null });
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
 
@@ -51,8 +51,11 @@ const ProductsAdministration = () => {
         }
         await addProduct({ ...newProduct, price: parseFloat(newProduct.price), id_category: parseInt(newProduct.id_category) });
         setIsProductModalOpen(false);
-        setNewProduct({ name: "", description: "", price: "", unit_type: "", id_category: "" });
+        setNewProduct({ name: "", description: "", price: "", unit_type: "", id_category: "", fecha_vencimiento: null });
     };
+
+    console.log(products);
+
 
     return (
         <div className="lg:pr-10 lg:pl-10 lg:pt-5 space-y-8">
@@ -115,6 +118,13 @@ const ProductsAdministration = () => {
                             options={[{ value: "", label: "Selecciona un categoría" }, ...categories.map((c) => ({ label: c.name, value: c.id_category.toString() }))]}
                             value={newProduct.id_category}
                             onChange={(e) => setNewProduct({ ...newProduct, id_category: e.target.value })} />
+                        {/* Agregar el input para la fecha de vencimiento */}
+                        <InputFuturistic
+                            label="Fecha de Vencimiento (opcional)"
+                            type="date"
+                            value={newProduct.fecha_vencimiento || ""}
+                            onChange={(e) => setNewProduct({ ...newProduct, fecha_vencimiento: e.target.value })}
+                        />
                         <ButtonFuturistic label={loading ? "" : "Crear Producto"} icon={loading ? LoaderPinwheel : Plus} onClick={handleAddProduct} disabled={loading} className="mt-3 w-full" />
                     </ModalFuturistic>
 
@@ -125,6 +135,18 @@ const ProductsAdministration = () => {
                             { key: "price", label: "Precio S/" },
                             { key: "unit_type", label: "Unidad" },
                             { key: "sku", label: "SKU" },
+                            {
+                                key: "fecha_vencimiento",
+                                label: "Vencimiento",
+                                render: (fecha) => {
+                                    if (fecha) {
+                                        const date = new Date(fecha);
+                                        date.setDate(date.getDate() + 1);
+                                        return date.toLocaleDateString();
+                                    }
+                                    return 'd - m - a'
+                                },
+                            },
                             {
                                 key: "status", label: "Estado",
                                 render: (value) => (
@@ -184,6 +206,13 @@ const ProductsAdministration = () => {
                             value={editingProduct.id_category.toString() || ""}
                             onChange={(e) => setEditingProduct({ ...editingProduct, id_category: parseInt(e.target.value) })} />
                         <SwitchFuturistic label="Estado" checked={editingProduct.status} onChange={(checked) => setEditingProduct({ ...editingProduct, status: checked })} />
+                        {/* Agregar el input para la fecha de vencimiento en edición */}
+                        <InputFuturistic
+                            label="Fecha de Vencimiento (opcional)"
+                            type="date"
+                            value={editingProduct.fecha_vencimiento ? new Date(editingProduct.fecha_vencimiento).toISOString().split('T')[0] : ""}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, fecha_vencimiento: e.target.value })}
+                        />
                         <ButtonFuturistic className="mt-3 w-full"
                             label={loading ? "" : "Guardar Cambios"}
                             icon={loading ? LoaderPinwheel : Pencil}
@@ -191,6 +220,7 @@ const ProductsAdministration = () => {
                                 if (!editingProduct) return;
                                 await editProduct(editingProduct.id_product, editingProduct);
                                 setIsEditProductModalOpen(false);
+                                setEditingProduct(null);
                             }}
                             disabled={loading}
                         />

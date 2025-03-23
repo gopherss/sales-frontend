@@ -46,13 +46,13 @@ const TicketsAdministration = () => {
                 }}
                 actions={(sale) => (
                     <>
-                        <ButtonFuturistic
+                        {/* <ButtonFuturistic
                             gradient="bg-gradient-to-r from-green-500 to-teal-600"
                             icon={Pencil}
                             onClick={() => {
                                 console.log("Sale seleccionada:", sale);
                             }}
-                        />
+                        /> */}
                         <ButtonFuturistic
                             gradient="bg-gradient-to-r from-red-600 to-rose-500"
                             icon={DockIcon}
