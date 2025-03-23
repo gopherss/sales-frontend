@@ -16,7 +16,21 @@ const ProductsAdministration = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-    const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", unit_type: "", id_category: "", fecha_vencimiento: null });
+    const [newProduct, setNewProduct] = useState<{
+        name: string;
+        description: string;
+        price: string;
+        unit_type: string;
+        id_category: string;
+        fecha_vencimiento: string | null; // Cambiar el tipo
+    }>({
+        name: "",
+        description: "",
+        price: "",
+        unit_type: "",
+        id_category: "",
+        fecha_vencimiento: null, // Sigue permitiendo null
+    });
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
 
@@ -123,7 +137,7 @@ const ProductsAdministration = () => {
                             label="Fecha de Vencimiento (opcional)"
                             type="date"
                             value={newProduct.fecha_vencimiento || ""}
-                            onChange={(e) => setNewProduct({ ...newProduct, fecha_vencimiento: e.target.value })}
+                            onChange={(e) => setNewProduct({ ...newProduct, fecha_vencimiento: e.target.value || null })}
                         />
                         <ButtonFuturistic label={loading ? "" : "Crear Producto"} icon={loading ? LoaderPinwheel : Plus} onClick={handleAddProduct} disabled={loading} className="mt-3 w-full" />
                     </ModalFuturistic>
@@ -139,13 +153,13 @@ const ProductsAdministration = () => {
                                 key: "fecha_vencimiento",
                                 label: "Vencimiento",
                                 render: (fecha) => {
-                                    if (fecha) {
+                                    if (typeof fecha === "string" || typeof fecha === "number") {
                                         const date = new Date(fecha);
                                         date.setDate(date.getDate() + 1);
-                                        return date.toLocaleDateString();
+                                        return <span>{date.toLocaleDateString()}</span>;
                                     }
-                                    return 'd - m - a'
-                                },
+                                    return <span>d - m - a</span>;
+                                }
                             },
                             {
                                 key: "status", label: "Estado",

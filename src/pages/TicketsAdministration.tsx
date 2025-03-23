@@ -4,7 +4,7 @@ import {
     ButtonFuturistic, ModalFuturistic, TitleFuturistic,
     TableFuturistic, InputFuturistic, CustomerAutocomplete
 } from "../components";
-import { DockIcon, LoaderPinwheel, Pencil, Save } from "lucide-react";
+import { DockIcon, LoaderPinwheel, Save } from "lucide-react";
 import { Sale } from "../services/sales.service";
 import generatePDF from "../utils/generatePDF";
 import { formatDate } from "../utils/functionDate";
