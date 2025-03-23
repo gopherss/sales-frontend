@@ -16,10 +16,8 @@ const TicketsAdministration = () => {
     const [editingSale, setEditingSale] = useState<Sale | null>(null);
 
     useEffect(() => {
-        if (sales.length === 0) {
-            fetchSales();
-        }
-    }, [fetchSales, sales]);
+        fetchSales();
+    }, [fetchSales]);
 
     return (
         <div className="lg:pr-10 lg:pl-10 lg:pt-5 space-y-8">

@@ -68,9 +68,6 @@ const ProductsAdministration = () => {
         setNewProduct({ name: "", description: "", price: "", unit_type: "", id_category: "", fecha_vencimiento: null });
     };
 
-    console.log(products);
-
-
     return (
         <div className="lg:pr-10 lg:pl-10 lg:pt-5 space-y-8">
             <TitleFuturistic as="h1" >Gestión de Productos</TitleFuturistic>
