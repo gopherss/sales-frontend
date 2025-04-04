@@ -60,6 +60,11 @@ const SalesAdministration: FC = (): JSX.Element => {
     };
 
     const handleProductSelect = (product: Product) => {
+        console.info({
+            nombre: product.name,
+            cantidadDiponible: product.stock,
+        });
+
         if (product.stock === 0) {
             toast.error("No hay stock disponible")
             return
@@ -77,7 +82,7 @@ const SalesAdministration: FC = (): JSX.Element => {
 
         setHighlightId(product.id_product);
         setTimeout(() => setHighlightId(null), 1500);
-        toast.success(`${product.name} añadido al carrito`);
+        toast.success(`${product.name} añadido al carrito quedan ${product.stock}`);
     };
 
     const updateQuantity = (id: number, quantity: number) => {
