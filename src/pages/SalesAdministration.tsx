@@ -60,6 +60,11 @@ const SalesAdministration: FC = (): JSX.Element => {
     };
 
     const handleProductSelect = (product: Product) => {
+        if (product.stock === 0) {
+            toast.error("No hay stock disponible")
+            return
+        }
+
         setCart(prevCart => {
             const index = prevCart.findIndex(item => item.product.id_product === product.id_product);
             if (index !== -1) {
@@ -147,7 +152,7 @@ const SalesAdministration: FC = (): JSX.Element => {
             setDniSearch("");
             setCart([]);
         } else {
-            toast.error("No hay stock disponible");
+            console.log('Ucurrió un error al registrar la venta')
         }
     };
 
