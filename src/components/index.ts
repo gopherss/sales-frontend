@@ -10,6 +10,7 @@ export { default as SwitchFuturistic } from "./SwitchFuturistic";
 export { default as ProductAutocomplete } from "./ProductAutocomplete";
 export { default as SupplierAutocomplete } from "./SupplierAutocomplete";
 export { default as CustomerAutocomplete } from "./CustomerAutocomplete";
+export { default as AlertModal } from "./AlertModal";
 export { default as ShoppingCart } from "./ShoppingCart";
 
 

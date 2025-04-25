@@ -2,9 +2,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Sale } from "../services/sales.service";
 import { formatDate } from "./functionDate";
+import { getCompanyLogo, getCompanyName } from "./companyConfig";
 
-const generatePDF = (sale: Sale) => {
+const generatePDF = async (sale: Sale) => {
     const doc: jsPDF = new jsPDF();
+    const name = await getCompanyName();
+    const logoBase64 = await getCompanyLogo();
+
     const pageWidth: number = doc.internal.pageSize.width;
     const headerHeight: number = 60;
 
@@ -18,14 +22,21 @@ const generatePDF = (sale: Sale) => {
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(28);
-    doc.text("Nombre", 15, 35);
+    if (logoBase64) {
+        doc.addImage(logoBase64, 'PNG', 15, 10, 30, 30);
+    } else {
+        doc.setDrawColor(0);
+        doc.rect(15, 10, 30, 30);
+        doc.setFontSize(8);
+        doc.text('Logo de la empresa', 30, 27, { align: 'center' });
+    }
     doc.setTextColor(0, 200, 255);
-    doc.text("Empresa", 70, 35);
+    doc.text(name || "Nombre Empresa", 70, 35);
 
     // Invoice Details
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
-    doc.text("FACTURA", pageWidth - 15, 25, { align: "right" });
+    doc.text("BOLETA", pageWidth - 15, 25, { align: "right" });
     doc.setFontSize(12);
     doc.text(`Fecha: ${formatDate(sale.date)}`, pageWidth - 15, 45, { align: "right" });
 
@@ -33,7 +44,7 @@ const generatePDF = (sale: Sale) => {
     doc.setTextColor(40, 44, 52);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("FACTURADO A", 15, 80);
+    doc.text("EMITIDO A", 15, 80);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.text(`${sale.customer?.name || "N/A"}, ${sale.customer?.first_surname || ""} ${sale.customer?.second_surname || ""}`, 15, 88);
@@ -110,7 +121,7 @@ const generatePDF = (sale: Sale) => {
 
     // Save the PDF
     const extension: string = '.pdf'
-    doc.save(`Factura_${sale.id_sale}${extension}`);
+    doc.save(`BOLETA_${sale.id_sale}${extension}`);
 };
 
 export default generatePDF;

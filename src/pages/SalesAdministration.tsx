@@ -1,5 +1,5 @@
-import { FC, JSX, useState } from "react";
-import { ButtonFuturistic, InputFuturistic, TitleFuturistic, ProductAutocomplete, SelectFuturistic, ShoppingCart } from "../components";
+import { FC, JSX, useEffect, useState } from "react";
+import { ButtonFuturistic, InputFuturistic, TitleFuturistic, ProductAutocomplete, SelectFuturistic, ShoppingCart, AlertModal } from "../components";
 import { Banknote, LoaderPinwheel, NotebookPen, PencilLine, Save, Search } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { Product } from "../store/useProductStore";
@@ -13,10 +13,14 @@ import { Sale } from "../services/sales.service";
 const SalesAdministration: FC = (): JSX.Element => {
     const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
     const [highlightId, setHighlightId] = useState<number | null>(null);
-    const [dniSearch, setDniSearch] = useState("");
+    const [dniSearch, setDniSearch] = useState<string>("");
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<string>("");
     const [operationNumber, setOperationNumber] = useState<string>("");
+    const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+    const [toRemoveId, setToRemoveId] = useState<number | null>(null);
+    const [clearOpen, setClearOpen] = useState<boolean>(false);
+
     const { loading, searchCustomer, addCustomer } = useCustomerStore();
     const { registerSale, loadingSale } = useSalesStore();
     const { token } = useAuthStore();
@@ -24,7 +28,17 @@ const SalesAdministration: FC = (): JSX.Element => {
     const decodedToken: { id: number; role: string } = jwtDecode(token ?? '');
     const total = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-    const handleSearchByDni = async () => {
+
+    useEffect(() => {
+        if (paymentMethod.toLocaleLowerCase() === 'PagoEfectivo'.toLocaleLowerCase()) {
+            const opNum = `EF-${Date.now()}`
+            setOperationNumber(opNum);
+        } else {
+            setOperationNumber('');
+        }
+    }, [paymentMethod]);
+
+    const handleSearchByDni = async (): Promise<void> => {
         if (!/^\d{8}$/.test(dniSearch)) {
             toast.error("El DNI debe tener 8 dígitos");
             return;
@@ -38,7 +52,7 @@ const SalesAdministration: FC = (): JSX.Element => {
         }
     };
 
-    const handleSaveCustomer = async () => {
+    const handleSaveCustomer = async (): Promise<void> => {
         if (!customer || !customer.name || !customer.first_surname) {
             toast.error("Completa los campos obligatorios");
             return;
@@ -59,7 +73,7 @@ const SalesAdministration: FC = (): JSX.Element => {
         }
     };
 
-    const handleProductSelect = (product: Product) => {
+    const handleProductSelect = (product: Product): void => {
         console.info({
             nombre: product.name,
             cantidadDiponible: product.stock,
@@ -85,7 +99,7 @@ const SalesAdministration: FC = (): JSX.Element => {
         toast.success(`${product.name} añadido al carrito quedan ${product.stock}`);
     };
 
-    const updateQuantity = (id: number, quantity: number) => {
+    const updateQuantity = (id: number, quantity: number): void => {
         setCart(prevCart =>
             prevCart
                 .map(item => item.product.id_product === id ?
@@ -93,19 +107,30 @@ const SalesAdministration: FC = (): JSX.Element => {
                 .filter(item => item.quantity > 0)
         );
     };
-    const removeProduct = (id: number) => {
-        if (window.confirm("¿Estás seguro de eliminar este producto?")) {
-            setCart(prevCart => prevCart.filter(item => item.product.id_product !== id));
-            toast.success("Producto eliminado");
-        }
+    const removeProduct = (id: number): void => {
+        setToRemoveId(id);
+        setConfirmOpen(true);
     };
 
-    const clearCart = () => {
-        if (cart.length && window.confirm("¿Estás seguro de vaciar el carrito?")) {
-            setCart([]);
-            toast.success("Carrito vaciado");
-        }
+    const handleConfirmRemove = (): void => {
+        if (toRemoveId === null) return;
+        setCart(prevCart => prevCart.filter(item => item.product.id_product !== toRemoveId));
+        toast.success('Producto eliminado');
+        setConfirmOpen(false);
+        setToRemoveId(null);
+    }
+
+    const clearCart = (): void => {
+        if (!cart.length) return;
+        setClearOpen(true);
     };
+
+    const handleConfirmClear = (): void => {
+        setCart([]);
+        toast.success("Carrito vaciado");
+        setClearOpen(false);
+    };
+
 
     const handleRegisterSale = async (): Promise<void> => {
         if (!cart.length) {
@@ -185,7 +210,7 @@ const SalesAdministration: FC = (): JSX.Element => {
                                 />
                             </div>
                             <ButtonFuturistic
-                                label={loading ? "" : "Consultar Cliente"}
+                                label={loading ? "" : "Consultar DNI"}
                                 icon={loading ? LoaderPinwheel : Search}
                                 className="w-full md:w-auto mt-2 md:mt-6"
                                 onClick={handleSearchByDni}
@@ -250,6 +275,8 @@ const SalesAdministration: FC = (): JSX.Element => {
                         placeholder="Ingrese el número de operación"
                         value={operationNumber}
                         onChange={(e) => setOperationNumber(e.target.value)}
+                        readOnly={paymentMethod.toLowerCase() === 'PagoEfectivo'}
+                        disabled={paymentMethod.toLowerCase() === 'pagoefectivo'}
                     />
                 </div>
 
@@ -265,6 +292,26 @@ const SalesAdministration: FC = (): JSX.Element => {
                     loadingSale={loadingSale}
                     customerSelected={!!customer} // ✅ Se convierte en booleano
                     paymentMethodSelected={!!paymentMethod} // ✅ Se convierte en booleano
+                />
+
+                <AlertModal
+                    open={confirmOpen}
+                    title="Eliminar producto"
+                    message="¿Estás seguro de que deseas eliminar este producto del carrito?"
+                    confirmText="Sí, eliminar"
+                    cancelText="Cancelar"
+                    onConfirm={handleConfirmRemove}
+                    onCancel={() => setConfirmOpen(false)}
+                />
+
+                <AlertModal
+                    open={clearOpen}
+                    title="Vaciar carrito"
+                    message="¿Estás seguro de que deseas vaciar todo el carrito?"
+                    confirmText="Sí, vaciar"
+                    cancelText="Cancelar"
+                    onConfirm={handleConfirmClear}
+                    onCancel={() => setClearOpen(false)}
                 />
 
             </div>
